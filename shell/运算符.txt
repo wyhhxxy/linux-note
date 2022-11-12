@@ -1,0 +1,84 @@
+【运算符】
+
+基本语法："$((运算式))"  或者  "$[运算式]"
+ 
+
+①
+[root@dr txt]# expr  1 + 5
+6
+[root@dr txt]#
+[root@dr txt]# expr  2 *  5      《*有特殊含义》
+expr: syntax error
+[root@dr txt]#
+[root@dr txt]# expr  2  \*  5    《需要\做转译》
+10
+[root@dr txt]#
+
+
+②
+ "$[运算式]"
+[root@dr txt]# echo $[2*5]
+10
+[root@dr txt]#
+
+[root@dr txt]# a=$[2+5]
+[root@dr txt]# echo $a
+7
+[root@dr txt]#
+
+[root@dr txt]# c=$[(2+3)*5]
+[root@dr txt]#
+[root@dr txt]# echo $c
+25
+[root@dr txt]#
+
+
+③命令替换
+[root@dr txt]# a=$(expr  3  \*  5)      《执行命令用括号括起来() ,就变成了值》
+[root@dr txt]#
+[root@dr txt]# echo $a
+15
+
+[root@dr txt]# a=$`expr 5 \* 5`      《执行命令用反引号 `` ,就变成了值》
+[root@dr txt]#
+[root@dr txt]# echo $a
+$25
+[root@dr txt]#
+[root@dr txt]#
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[root@dr txt]# cat add.sh
+#!/bin/bash
+sum=$[$1 + $2]
+echo sum=$sum
+[root@dr txt]#
+[root@dr txt]# chmod +x add.sh
+[root@dr txt]#
+[root@dr txt]# ./add.sh  25  66
+sum=91
+[root@dr txt]#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

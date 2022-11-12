@@ -1,0 +1,143 @@
+
+[root@dr ~]# cat /etc/shells
+/bin/sh
+/bin/bash
+/usr/bin/sh
+/usr/bin/bash
+/bin/tcsh
+/bin/csh
+[root@dr ~]#
+
+[root@dr ~]# ls -l /bin/ | grep  bash
+-rwxr-xr-x. 1 root root      964608 Oct 30  2018 bash
+lrwxrwxrwx. 1 root root          10 Oct 12 21:58 bashbug -> bashbug-64
+-rwxr-xr-x. 1 root root        6964 Oct 30  2018 bashbug-64
+lrwxrwxrwx. 1 root root           4 Oct 12 21:58 sh -> bash
+[root@dr ~]#
+
+[root@dr ~]# echo  $SHELL
+/bin/bash
+[root@dr ~]#
+
+[root@dr ~]# less  /bin//unix-lpr.sh
+[root@dr ~]#
+
+#!bin/bash
+
+执行：
+①
+bash  +路径
+sh      +路径
+②
+chmod +x   hello.sh
+./hello.sh
+
+
+①
+[root@dr txt]# touch hello.sh
+[root@dr txt]# vim hello.sh
+[root@dr txt]# ls
+hello.sh  hello.txt
+[root@dr txt]# sh hello.sh
+hello world
+[root@dr txt]#
+
+②
+[root@dr txt]# chmod +x hello.sh
+[root@dr txt]#
+[root@dr txt]# ./hello.sh
+hello world
+[root@dr txt]#
+
+子进程
+③
+[root@dr txt]# source hello.sh    《在当前bash环境执行》
+hello world
+[root@dr txt]#
+[root@dr txt]# type source
+source is a shell builtin   内嵌
+[root@dr txt]#
+刷新环境变量
+[root@dr txt]# source  /etc/profile
+[root@dr txt]#
+
+④
+[root@dr txt]# . hello.sh
+hello world
+[root@dr txt]#
+
+前两种方式都是在当前 shell 中打开一个子 shell 来执行脚本内容，
+当脚本内容结束，则子 shell 关闭，回到父 shell 中。
+
+第三种，也就是使用在脚本路径前加“.”或者 source 的方式，
+可以使脚本内容在当前shell 里执行，而无需打开子 shell
+这也是为什么我们每次要修改完/etc/profile 文件以后，
+需要 source一下的原因。
+
+开子 shell 与不开子 shell 的区别就在于，
+环境变量的继承关系，
+如在子 shell 中设置的当前变量，父shell是不可见的
+
+验证：
+[root@dr txt]# ps -f
+UID         PID   PPID  C STIME TTY          TIME CMD
+root      22938  22906  0 Nov11 pts/1    00:00:00 -bash
+root      26324  22938  0 02:56 pts/1    00:00:00 ps -f
+[root@dr txt]#
+[root@dr txt]# bash
+[root@dr txt]#
+[root@dr txt]# ps -f
+UID         PID   PPID  C STIME TTY          TIME CMD
+root      22938  22906  0 Nov11 pts/1    00:00:00 -bash
+root      26333  22938  0 02:56 pts/1    00:00:00 bash        《子shell》
+root      26366  26333  0 02:56 pts/1    00:00:00 ps -f
+[root@dr txt]#
+[root@dr txt]# ./hello.sh          《是在子shell中去执行的》
+hello world
+[root@dr txt]#
+
+
+[root@dr txt]# exit    《退出的是子shell》
+exit
+[root@dr txt]#
+[root@dr txt]# ps -f     《再看没有子shell了》
+UID         PID   PPID  C STIME TTY          TIME CMD
+root      22938  22906  0 Nov11 pts/1    00:00:00 -bash
+root      26422  22938  0 02:58 pts/1    00:00:00 ps -f
+[root@dr txt]#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

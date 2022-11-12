@@ -1,0 +1,335 @@
+***************************************************
+
+【变量】
+
+①系统定义好的
+②用户自己定义的
+
+③全局环境变量
+④局部环境变量
+
+常用系统变量
+$HOME  、  $PWD   、   $SHELL   、$USER
+
+[root@dr txt]# echo $USER
+root
+[root@dr txt]#
+[root@dr txt]# echo $PWD
+/root/txt
+[root@dr txt]#
+
+显示当前Shell中的所有变量：
+①set
+②env
+③printenv
+
+
+①
+[root@dr txt]# env
+XDG_SESSION_ID=39
+HOSTNAME=dr
+SELINUX_ROLE_REQUESTED=
+TERM=xterm
+SHELL=/bin/bash
+
+
+②
+[root@dr txt]# printenv USER
+root
+[root@dr txt]#
+
+
+③
+[root@dr txt]# set  | less
+ABRT_DEBUG_LOG=/dev/null
+BASH=/bin/bash
+BASHOPTS=checkwinsize:cmdhist:expand_aliases:extglob:extquote:force_fignore:histappend:interactive_comme
+nts:login_shell:progcomp:promptvars:sourcepath
+BASH_ALIASES=()
+BASH_ARGC=()
+BASH_ARGV=()
+
+*********************************************************
+
+【用户自定义变量】
+
+基本语法：
+（1）定义变量：   变量名=变量值 
+（2）撤销变量：  unset  变量名 
+（3）声明静态变量： readonly   只读变量
+   
+
+
+[root@dr txt]# a=2
+[root@dr txt]#
+[root@dr txt]# echo  $a
+2
+[root@dr txt]#
+[root@dr txt]# my_var=hello
+[root@dr txt]# echo  $my_var
+hello
+[root@dr txt]# my_var=HELLO
+[root@dr txt]# echo  $my_var
+HELLO
+[root@dr txt]#
+[root@dr txt]# my_var="hello   world"   《有空格用 双引号  " "、或者单引号 '  '》
+[root@dr txt]# echo  $my_var
+hello world
+[root@dr txt]#
+
+
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1、验证：为局部变量
+
+[root@dr txt]# env |grep  my_var
+[root@dr txt]#
+[root@dr txt]# set |grep my_var
+my_var='hello   world'
+[root@dr txt]#
+[root@dr txt]# bash
+[root@dr txt]#
+[root@dr txt]# ps -f
+UID         PID   PPID  C STIME TTY          TIME CMD
+root      22938  22906  0 Nov11 pts/1    00:00:00 -bash
+root      27107  22938  1 03:21 pts/1    00:00:00 bash
+root      27140  27107  0 03:21 pts/1    00:00:00 ps -f
+[root@dr txt]#
+[root@dr txt]# echo $my_var
+
+[root@dr txt]#
+[root@dr txt]# exit
+exit
+[root@dr txt]# echo $my_var
+hello world
+[root@dr txt]#
+
+
+
+
+2、局部变量  提升为  全局变量  :   export    my_var
+
+[root@dr txt]# export my_var
+[root@dr txt]#
+[root@dr txt]# echo $my_var
+hello world
+[root@dr txt]#
+[root@dr txt]# ps -f
+UID         PID   PPID  C STIME TTY          TIME CMD
+root      22938  22906  0 Nov11 pts/1    00:00:00 -bash
+root      27259  22938  0 03:25 pts/1    00:00:00 ps -f
+[root@dr txt]#
+[root@dr txt]# bash
+[root@dr txt]#
+[root@dr txt]# ps -f
+UID         PID   PPID  C STIME TTY          TIME CMD
+root      22938  22906  0 Nov11 pts/1    00:00:01 -bash
+root      27285  22938  1 03:26 pts/1    00:00:00 bash
+root      27318  27285  0 03:26 pts/1    00:00:00 ps -f
+[root@dr txt]#
+[root@dr txt]# echo $my_var
+hello world
+[root@dr txt]#
+
+
+
+3、子shell做的更改，不会影响到父shell，就算在子shell中export，也还是不行
+
+在父shell中做的更改，在子shell也能看到
+
+父影响子，子不影响父
+
+[root@dr txt]# my_var="hello, linux "    《在子shell做的更改》
+[root@dr txt]#
+[root@dr txt]# echo  $my_var       《子shell中改变了》
+hello, linux
+[root@dr txt]#
+[root@dr txt]# exit                 《退出子shell》
+exit
+[root@dr txt]# echo $my_var     《在父shell中查看，没有更改》
+hello world
+[root@dr txt]#
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+1、运算
+
+[root@dr txt]# echo $a
+2
+[root@dr txt]#
+[root@dr txt]# a=$[6+9]
+[root@dr txt]# echo $a
+15
+
+
+2、声明静态变量： readonly   只读变量
+
+[root@dr txt]# readonly b=5
+[root@dr txt]# b=22
+-bash: b: readonly variable
+[root@dr txt]#
+
+
+3、撤销变量：  unset  变量名 
+
+[root@dr txt]# unset  a
+[root@dr txt]#
+[root@dr txt]# unset  b
+-bash: unset: b: cannot unset: readonly variable
+[root@dr txt]#
+
+
+****************************************************************
+
+【特殊变量】
+
+[root@dr txt]# hello.sh
+bash: hello.sh: command not found...
+[root@dr txt]#
+[root@dr txt]# cp hello.sh   /bin/    《放到bin下面》
+[root@dr txt]#
+[root@dr txt]# hello.sh
+hello world
+hello world
+[root@dr txt]#
+[root@dr txt]#
+[root@dr txt]# rm -rf /bin/hello.sh
+[root@dr txt]#
+[root@dr txt]# echo $PATH
+/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/root/bin
+[root@dr txt]#
+
+
+【特殊变量    $n】  
+n为数字，$0 代表脚本名称，$1-$9代表第一个到第几个参数，
+              十以上的参数用大括号，如${23}
+
+①
+[root@dr txt]# cat hello.sh
+#!/bin/bash
+echo "hello world"
+echo "hello, $1"
+[root@dr txt]# ./hello.sh
+hello world
+hello,
+[root@dr txt]#
+[root@dr txt]# ./hello.sh  小明
+hello world
+hello, 小明
+[root@dr txt]#
+
+
+②
+[root@dr txt]# cat parameter.sh
+#!/bin/bash
+echo '==========$n=========='
+echo script name: $0
+echo 1st  parameter: $1
+echo 2st  parameter:$2
+[root@dr txt]#
+[root@dr txt]# chmod +x parameter.sh
+[root@dr txt]#
+[root@dr txt]# ./parameter.sh   第一个参数    第二个参数
+==========$n==========
+script name: ./parameter.sh      《$0代表脚本名称，会带着路径》
+1st parameter: 第一个参数
+2st parameter:第二个参数
+[root@dr txt]#
+
+
+【$#】获取所有  输入参数个数，常用于循环
+
+
+[root@dr txt]# cat parameter.sh
+#!/bin/bash
+echo '==========$n=========='
+echo script name: $0
+echo 1st  parameter: $1
+echo 2st  parameter:$2
+
+echo '=========$#=========='
+echo paramter numbers: $#
+[root@dr txt]#
+[root@dr txt]#
+
+[root@dr txt]# ./parameter.sh   第一个参数    第二个参数
+==========$n==========
+script name: ./parameter.sh
+1st parameter: 第一个参数
+2st parameter:第二个参数
+=========$#==========
+paramter numbers: 2   《获取输入参数的个数》
+[root@dr txt]#
+[root@dr txt]#
+
+
+
+【$*、 $@】    （感觉没啥子用处）
+获取命令中的所有参数
+$# ，把所有参数看出一个整体，如“  第一个参数    第二个参数”  是一个
+$@ ，把所有参数区别对待，     如“  第一个参数    第二个参数”  是两个
+
+
+[root@dr txt]# cat parameter.sh
+#!/bin/bash
+echo '==========$n=========='
+echo script name: $0
+echo 1st  parameter: $1
+echo 2st  parameter:$2
+echo '=========$#=========='
+echo paramter numbers: $#
+echo '=========$*=========='
+echo  $*
+echo '=========$@=========='
+echo  $@
+[root@dr txt]#
+
+[root@dr txt]# ./parameter.sh   第一个参数    第二个参数
+==========$n==========
+script name: ./parameter.sh
+1st parameter: 第一个参数
+2st parameter:第二个参数
+=========$#==========
+paramter numbers: 2
+=========$*==========
+第一个参数 第二个参数
+=========$@==========
+第一个参数 第二个参数
+[root@dr txt]#
+[root@dr txt]#
+
+
+
+【 $? 】 
+最后一次执行的  命令的返回状态，
+如果值为0，代表命令正确执行，
+如果非0 (具体数值有命令决定)，代表命令执行不正确
+
+
+[root@dr txt]# echo $?
+0
+[root@dr txt]#
+[root@dr txt]#
+[root@dr txt]# parameter.sh
+bash: parameter.sh: command not found...
+[root@dr txt]#
+[root@dr txt]# echo $?
+127
+[root@dr txt]#
+
+
+
+
+
+
+
+
+
+
+
+
+
