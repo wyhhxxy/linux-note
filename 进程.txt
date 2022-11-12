@@ -1,0 +1,150 @@
+ls /usr/lib/systemd/system  | grep d.service
+d.service 守护进程
+
+*********************************************************
+
+1、【ps】
+
+当前 用户/终端 调用的进程，有限
+
+ps aux | grep xxx   查看系统中的所有进程
+ps  -ef | grep xxx   查看子父进程之间的关系
+
+查看进程的CPU、内存的占用率，使用aux
+查看进程的父进程ID，使用ef
+
+a：列出终端的所有进程
+x：列出当前用户的所有进程，包括没有终端的进程
+u：面向用户友好的显示风格                         (不加-，BSD风格)
+-e：列出所有进程                                         (加 - ，UNIX风格)
+-u：列出某个用户关联的所有进程
+-f：显示完整格式的进程列表
+
+PID：当前进程ID ,   PPID：PID的父进程
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+USER        PID %CPU %MEM    VSZ                        RSS                              TTY                                            STAT     START      TIME             COMMAND
+                                              占用的虚拟内存         占用的实际物理内存        哪个终端在调用，? 就是没有          进程状态                                                 调用进程命令
+
+PID：进程的ID号
+
+%CPU：    占用CPU的百分比
+%MOEM：占用物理内存的百分比
+
+VSZ：占用的虚拟内存，单位KB
+RSS：占用的物理内存，单位KB
+经常用的才保留在物理内存，不常用的放在虚拟内存里面
+
+LRU：最近使用最少的页面
+
+TTY1:图形化终端
+TTY 2-6 :本地的字符界面终端
+PTS/0-255:虚拟终端
+
+STAT： 进程状态。
+R：运行，S：睡眠，T：暂停，Z:僵尸 s: 包含子进程，l:多线程，+:前台显示
+
+START：进程的启动时间
+
+TIME：该进程占用CPU的运算时间，不是系统时间
+COMMAND：产生此进程的命令名
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+**************************************************************
+
+2、 【kill】 终止进程
+
+kill 进程号              通过进程号杀死进程
+killall   进程名称     通过进程名称杀死进程，支持通配符
+-9  强制
+
+[root@dr ~]# ps -ef | grep sshd
+root       8831      1  0 18:10 ?        00:00:00 /usr/sbin/sshd -D
+root      21473   8831  0 20:21 ?        00:00:01 sshd: root@pts/4
+root      21477   8831  0 20:21 ?        00:00:00 sshd: root@notty
+root      22192   8831  1 21:10 ?        00:00:00 sshd: q [priv]
+root      22196   8831  2 21:11 ?        00:00:00 sshd: q [priv]
+q         22197  22192  0 21:11 ?        00:00:00 sshd: q@pts/0
+q         22210  22196  0 21:11 ?        00:00:00 sshd: q@notty
+root      22276  21502  0 21:11 pts/4    00:00:00 grep --color=auto sshd
+[root@dr ~]# kill 22197
+[root@dr ~]# kill  8831
+
+[root@dr ~]# ps -ef | grep bash
+[root@dr ~]# kill -9  19988
+
+[root@dr ~]# killall sshd
+
+
+**********************************************************************
+
+3、【pstree】 进程树
+-p   显示进程的PID
+-u   显示进程的所属用户
+
+**********************************************************************
+
+4、【top】 实时监控系统进程
+
+-d   指定间隔几秒刷新
+-i    不显示任何限制或僵死进程
+-p   指定监控进程ID，来仅仅监控某个进程的状态
+
+top后显示排序方式：
+shift +p 、shift +m 、shift +n、shift +q
+p     以CPU使用率排序
+M    以内存使用率排序
+N     以PID排序
+回车：恢复默认
+
+[root@dr ~]# top
+top - 21:39:15 up  3:28,  4 users,  load average: 0.00, 0.01, 0.05
+Tasks: 232 total,   1 running, 231 sleeping,   0 stopped,   0 zombie
+%Cpu(s):  0.0 us,  0.0 sy,  0.0 ni,100.0 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+KiB Mem :  3087364 total,   205024 free,  1108668 used,  1773672 buff/cache
+KiB Swap:  2097148 total,  2096628 free,      520 used.  1642596 avail Mem
+
+   PID   USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND
+  8304   root      20   0       0      0         0      S   0.3  0.0   0:12.83 kworker/0:3
+ 19702  q          20   0  567128  26556  19416 S   0.3  0.9   0:20.18 vmtoolsd
+ 23326  root      20   0  162116   2376   1588 R   0.3  0.1   0:01.20 top
+     1    root       20   0  194020   7108   4224 S   0.0  0.2   0:04.30 systemd
+     2    root       20   0       0      0      0 S   0.0  0.0   0:00.04 kthreadd
+
+ps:
+load average: 0.00, 0.01, 0.05
+系统平均负载，过去一分钟、五分钟，十五分钟
+小于0.7都是正常的
+
+Tasks: 232 total
+当前正在执行的任务，运行的程序
+ 1 running, 231 sleeping，0 stopped,   0 zombie
+1个正在运行，231个在睡眠，0个停止，0个僵尸状态
+
+
+%Cpu(s):  0.0 us,  0.0 sy,  0.0 ni,100.0 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+us：用户进程，sy ：系统进程，ni：经过nice调整优先级的 nice值越低越优先 
+id：idle 空闲，wa：wait 等待i/o操作 ，hi：硬件中断，si：软件中断，st：被虚拟机偷掉的
+
+KiB Mem
+内存占用情况    buff/cache ：放在缓存里的
+KiB Swap
+交换内存，虚拟内存占用的情况
+
+PR：系统调度优先级
+NI：用户指定的nice 值
+VIRT：虚拟内存占用的大小
+RES：实际内存，物理内存占用的大小
+SHR：共享内存 
+S：状态，status
+TIME+ ：当前运行的时间
+COMMAND：生成进程的命令
+
+
+
+
+
+
