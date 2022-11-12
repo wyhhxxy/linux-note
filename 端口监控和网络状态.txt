@@ -1,0 +1,56 @@
+
+************************************************************************************
+1、【netstat】显示网络状态和端口占用信息
+
+netstat -anp  |  grep  进程号    查看该进程的网络信息
+netstat  -lnp  |  grep  端口号    查看网络端口号占用情况
+
+-a  显示所有 正在监听 和 没有监听的套接字(socket)
+-n 拒绝显示别名，
+-l  仅列出在监听的服务状态
+-p 显示哪个进程在调用
+
+
+[root@dr ~]# netstat  -anp | less
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name
+tcp        0      0 0.0.0.0:111             0.0.0.0:*               LISTEN      1/systemd
+tcp        0      0 0.0.0.0:6000            0.0.0.0:*               LISTEN      10075/X
+tcp        0      0 192.168.122.1:53        0.0.0.0:*               LISTEN      9413/dnsmasq
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      22860/sshd
+tcp        0      0 127.0.0.1:631           0.0.0.0:*               LISTEN      8827/cupsd
+tcp        0      0 127.0.0.1:25            0.0.0.0:*               LISTEN      9445/master
+tcp        0      0 127.0.0.1:6010          0.0.0.0:*               LISTEN      22906/sshd: root@pt
+tcp        0      0 127.0.0.1:6011          0.0.0.0:*               LISTEN      22994/sshd: q@pts/2
+tcp        0      0 192.168.124.52:22       192.168.124.43:63239    ESTABLISHED 22988/sshd: q [priv
+tcp        0      0 192.168.124.52:22       192.168.124.43:63241    ESTABLISHED 22992/sshd: q [priv
+
+Proto：当前的协议
+Recv-Q：网络接收队列。表示收到的数据已经在本地接收缓冲，但是还有多少没有被进程取走，recv()
+Send-Q：      发送队列。对方没有收到的数据或者说没有Ack的,还是本地缓冲区.
+Local Address：本地地址
+Foreign Address：远程地址
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
