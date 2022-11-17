@@ -1,0 +1,6 @@
+  yum install openssh*
+  systemctl restart sshd
+systemctl status sshd
+ vim /etc/ssh/sshd_config 
+ /Root
+ifconfig 

